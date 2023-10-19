@@ -38,3 +38,19 @@ func TestHelloWorld(t *testing.T) {
 		t.Errorf("Expected: %s\nActual: %s", expected, actual)
 	}
 }
+
+// Need to check how we will handle multiple strings ie. Hello World rather than just Hello
+func TestSerialiseInput(t *testing.T) {
+	result, err := SerializeInput("SET", "name", "john")
+
+	// Check for errors
+	if err != nil {
+		t.Errorf("Error: %s", err)
+	}
+
+	// Check the result against the expected value
+	expected := "*3\r\n$3\r\nSET\r\n$4\r\nname\r\n$4\r\njohn"
+	if result != expected {
+		t.Errorf("Expected: %s\nActual: %s", expected, result)
+	}
+}
