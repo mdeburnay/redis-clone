@@ -43,24 +43,28 @@ import (
 	For Arrays, the first byte of the reply is "*"
 */
 
-/*
-	1. Take in a slice of strings
-	2. As it is a string parse the data in accordance with simple string RESP protocol
-	3. Return a string and an error
-*/
-
 func TestHandleSetCommand(t *testing.T) {
-	args := []string{"SET", "name", "john"}
-
-	expected := "*3\r\n$3\r\nSET\r\n$4\r\nname\r\n$4\r\njohn"
-
-	actual, err := HandleSetCommand(args)
-
-	if err != nil {
-		t.Fatal(err)
+	tests := []struct {
+		name     string
+		args     []string
+		expected string
+	}{
+		{
+			name:     "bulk strings",
+			args:     []string{"SET", "name", "john"},
+			expected: "*3\r\n$3\r\nSET\r\n$4\r\nname\r\n$4\r\njohn",
+		},
 	}
 
-	if actual != expected {
-		t.Fatalf("Expected %s, got %s", expected, actual)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			actual, err := HandleSetCommand(test.args)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if actual != test.expected {
+				t.Fatalf("expected %q, but got %q", test.expected, actual)
+			}
+		})
 	}
 }
