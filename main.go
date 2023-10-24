@@ -2,26 +2,27 @@ package main
 
 import (
 	"errors"
+	"net"
 	"strconv"
 	"strings"
 )
 
-// func main() {
-// 	// Start server
-// 	l, err := net.Listen("tcp", ":6379")
-// 	if err != nil {
-// 		panic(err)
-// 	}
+func main() {
+	// Start server
+	l, err := net.Listen("tcp", ":6379")
+	if err != nil {
+		panic(err)
+	}
 
-// 	// Accept connections
-// 	conn, err := l.Accept()
-// 	if err != nil {
-// 		panic(err)
-// 	}
+	// Accept connections
+	conn, err := l.Accept()
+	if err != nil {
+		panic(err)
+	}
 
-// 	// Close the connection once finished
-// 	defer conn.Close()
-// }
+	// Close the connection once finished
+	defer conn.Close()
+}
 
 func HandleSetCommand(args []string) (string, error) {
 	if len(args) < 1 {

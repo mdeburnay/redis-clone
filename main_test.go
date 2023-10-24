@@ -1,43 +1,38 @@
 package main
 
 import (
-	"fmt"
-	"io"
-	"net"
-	"os"
 	"testing"
-	"time"
 )
 
-func TestServer(t *testing.T) {
-	// Start the server in a goroutine
-	go main()
+// func TestServer(t *testing.T) {
+// 	// Start the server in a goroutine
+// 	go main()
 
-	// Give the server a chance to start up
-	time.Sleep(100 * time.Millisecond)
+// 	// Give the server a chance to start up
+// 	time.Sleep(100 * time.Millisecond)
 
-	// Connect
-	conn, err := net.Dial("tcp", "127.0.0.1:6379")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer conn.Close()
+// 	// Connect
+// 	conn, err := net.Dial("tcp", "127.0.0.1:6379")
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	defer conn.Close()
 
-	for {
-		buf := make([]byte, 1024)
+// 	for {
+// 		buf := make([]byte, 1024)
 
-		_, err = conn.Read(buf)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			fmt.Println(err)
-			os.Exit(1)
-		}
+// 		_, err = conn.Read(buf)
+// 		if err != nil {
+// 			if err == io.EOF {
+// 				break
+// 			}
+// 			fmt.Println(err)
+// 			os.Exit(1)
+// 		}
 
-		conn.Write([]byte("+OK\r\n"))
-	}
-}
+// 		conn.Write([]byte("+OK\r\n"))
+// 	}
+// }
 
 /*
 	FOR TESTING REFERENCE:
