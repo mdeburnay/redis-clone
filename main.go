@@ -1,6 +1,11 @@
 package main
 
-import "net"
+import (
+	"errors"
+	"net"
+	"strconv"
+	"strings"
+)
 
 func main() {
 	// Start server
@@ -17,4 +22,27 @@ func main() {
 
 	// Close the connection once finished
 	defer conn.Close()
+}
+
+func HandleSetCommand(args []string) (string, error) {
+	if len(args) < 1 {
+		return "", errors.New("No command provided")
+	}
+
+	var builder strings.Builder
+	builder.WriteString("*")
+	builder.WriteString(strconv.Itoa(len(args)))
+	builder.WriteString("\r\n")
+
+	for i, arg := range args {
+		builder.WriteString("$")
+		builder.WriteString(strconv.Itoa(len(arg)))
+		builder.WriteString("\r\n")
+		builder.WriteString(arg)
+		if i < len(args)-1 {
+			builder.WriteString("\r\n")
+		}
+	}
+
+	return builder.String(), nil
 }
