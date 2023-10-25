@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -45,25 +46,38 @@ import (
 
 func TestHandleSetCommand(t *testing.T) {
 	tests := []struct {
-		name     string
-		args     []string
-		expected string
+		name        string
+		args        []string
+		expected    string
+		expectedErr error
 	}{
 		{
-			name:     "bulk strings",
+			name:     "Bulk strings",
 			args:     []string{"SET", "name", "john"},
 			expected: "*3\r\n$3\r\nSET\r\n$4\r\nname\r\n$4\r\njohn",
+		},
+		{
+			name:        "Error if no input",
+			args:        []string{},
+			expected:    "",
+			expectedErr: ErrNoCommand,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			actual, err := HandleSetCommand(test.args)
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
-			if actual != test.expected {
-				t.Fatalf("expected %q, but got %q", test.expected, actual)
+			actual, err := HandleInput(test.args)
+			if test.expectedErr != nil {
+				if !errors.Is(err, test.expectedErr) {
+					t.Fatalf("expected error %v, but got %v", test.expectedErr, err)
+				}
+			} else {
+				if err != nil {
+					t.Fatalf("unexpected error: %v", err)
+				}
+				if actual != test.expected {
+					t.Fatalf("expected %q, but got %q", test.expected, actual)
+				}
 			}
 		})
 	}

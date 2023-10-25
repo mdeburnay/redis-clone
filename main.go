@@ -24,9 +24,11 @@ func main() {
 	defer conn.Close()
 }
 
-func HandleSetCommand(args []string) (string, error) {
+var ErrNoCommand = errors.New("Error: No command provided")
+
+func HandleInput(args []string) (string, error) {
 	if len(args) < 1 {
-		return "", errors.New("No command provided")
+		return "", ErrNoCommand
 	}
 
 	var builder strings.Builder
