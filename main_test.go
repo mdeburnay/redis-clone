@@ -62,6 +62,11 @@ func TestHandleSetCommand(t *testing.T) {
 			expected:    "",
 			expectedErr: ErrNoCommand,
 		},
+		{
+			name:     "Should transform command to uppercase",
+			args:     []string{"set", "name", "john"},
+			expected: "*3\r\n$3\r\nSET\r\n$4\r\nname\r\n$4\r\njohn",
+		},
 	}
 
 	for _, test := range tests {

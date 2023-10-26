@@ -31,6 +31,9 @@ func HandleInput(args []string) (string, error) {
 		return "", ErrNoCommand
 	}
 
+	// Ensure we capitalise the command before serialising
+	args[0] = strings.ToUpper(args[0])
+
 	var builder strings.Builder
 	builder.WriteString("*")
 	builder.WriteString(strconv.Itoa(len(args)))
