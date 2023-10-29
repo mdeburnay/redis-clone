@@ -47,31 +47,31 @@ import (
 func TestHandleSetCommand(t *testing.T) {
 	tests := []struct {
 		name        string
-		args        []string
+		input       string
 		expected    string
 		expectedErr error
 	}{
 		{
 			name:     "Bulk strings",
-			args:     []string{"SET", "name", "john"},
+			input:    "SET name john",
 			expected: "*3\r\n$3\r\nSET\r\n$4\r\nname\r\n$4\r\njohn",
 		},
 		{
 			name:        "Error if no input",
-			args:        []string{},
+			input:       "",
 			expected:    "",
 			expectedErr: ErrNoCommand,
 		},
 		{
 			name:     "Should transform command to uppercase",
-			args:     []string{"set", "name", "john"},
+			input:    "set name john",
 			expected: "*3\r\n$3\r\nSET\r\n$4\r\nname\r\n$4\r\njohn",
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			actual, err := HandleInput(test.args)
+			actual, err := HandleInput(test.input)
 			if test.expectedErr != nil {
 				if !errors.Is(err, test.expectedErr) {
 					t.Fatalf("expected error %v, but got %v", test.expectedErr, err)

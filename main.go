@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"errors"
+	"fmt"
 	"net"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -26,28 +29,34 @@ func main() {
 
 var ErrNoCommand = errors.New("Error: No command provided")
 
-func HandleInput(args []string) (string, error) {
-	if len(args) < 1 {
+func HandleInput(input string) (string, error) {
+
+	// If there is no input, return an error
+	if len(input) < 1 {
 		return "", ErrNoCommand
 	}
 
-	// Ensure we capitalise the command before serialising
-	args[0] = strings.ToUpper(args[0])
+	reader := bufio.NewReader(strings.NewReader(input))
 
-	var builder strings.Builder
-	builder.WriteString("*")
-	builder.WriteString(strconv.Itoa(len(args)))
-	builder.WriteString("\r\n")
+	b, _ := reader.ReadByte()
 
-	for i, arg := range args {
-		builder.WriteString("$")
-		builder.WriteString(strconv.Itoa(len(arg)))
-		builder.WriteString("\r\n")
-		builder.WriteString(arg)
-		if i < len(args)-1 {
-			builder.WriteString("\r\n")
-		}
+	if b != '$' {
+		fmt.Println("Invalid type, expecting bulk strings only")
+		os.Exit(1)
 	}
 
-	return builder.String(), nil
+	size, _ := reader.ReadByte()
+
+	strSize, _ := strconv.ParseInt(string(size), 10, 64)
+
+	// consume /r/n
+	reader.ReadByte()
+	reader.ReadByte()
+
+	name := make([]byte, strSize)
+	reader.Read(name)
+
+	fmt.Println(string(name))
+
+	return "bop"
 }
