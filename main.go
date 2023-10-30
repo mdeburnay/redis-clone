@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"io"
 	"net"
 	"os"
+	"strconv"
+	"strings"
 )
 
 type Value struct {
@@ -53,4 +56,31 @@ func main() {
 		// ignore request and send back a PONG
 		conn.Write([]byte("+OK\r\n"))
 	}
+}
+
+func BulkReader(input string) (string, error) {
+	reader := bufio.NewReader(strings.NewReader(input))
+
+	// Read the first byte
+	b, _ := reader.ReadByte()
+
+	// If the first byte is a $, then we know we are receiving a bulk string
+	if b != '$' {
+		fmt.Println("Not a bulk string")
+		return "", nil
+	}
+
+	// Next, read the number to determine the number of characters in a string
+	size, _ := reader.ReadByte()
+
+	strSize, _ := strconv.ParseInt(string(size), 10, 64)
+
+	// consume the \r\n
+	reader.ReadByte()
+	reader.ReadByte()
+
+	output := make([]byte, strSize)
+	reader.Read(output)
+
+	return string(output), nil
 }
