@@ -1,62 +1,56 @@
 package main
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"os"
-	"strconv"
-	"strings"
 )
 
-func main() {
-	// Start server
-	l, err := net.Listen("tcp", ":6379")
-	if err != nil {
-		panic(err)
-	}
-
-	// Accept connections
-	conn, err := l.Accept()
-	if err != nil {
-		panic(err)
-	}
-
-	// Close the connection once finished
-	defer conn.Close()
+type Value struct {
+	typ   string
+	str   string
+	num   int
+	bulk  string
+	array []Value
 }
 
 var ErrNoCommand = errors.New("Error: No command provided")
 
-func HandleInput(input string) (string, error) {
+func main() {
+	fmt.Println("Listening on port :6379")
 
-	// If there is no input, return an error
-	if len(input) < 1 {
-		return "", ErrNoCommand
+	// Create a new server
+	l, err := net.Listen("tcp", ":6379")
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 
-	reader := bufio.NewReader(strings.NewReader(input))
-
-	b, _ := reader.ReadByte()
-
-	if b != '$' {
-		fmt.Println("Invalid type, expecting bulk strings only")
-		os.Exit(1)
+	// Listen for connections
+	conn, err := l.Accept()
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 
-	size, _ := reader.ReadByte()
+	defer conn.Close()
 
-	strSize, _ := strconv.ParseInt(string(size), 10, 64)
+	for {
+		buf := make([]byte, 1024)
 
-	// consume /r/n
-	reader.ReadByte()
-	reader.ReadByte()
+		// read message from client
+		_, err = conn.Read(buf)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			fmt.Println("error reading from client: ", err.Error())
+			os.Exit(1)
+		}
 
-	name := make([]byte, strSize)
-	reader.Read(name)
-
-	fmt.Println(string(name))
-
-	return "bop"
+		// ignore request and send back a PONG
+		conn.Write([]byte("+OK\r\n"))
+	}
 }
