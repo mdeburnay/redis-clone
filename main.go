@@ -11,14 +11,6 @@ import (
 	"strings"
 )
 
-type Value struct {
-	typ   string
-	str   string
-	num   int
-	bulk  string
-	array []Value
-}
-
 var ErrNoCommand = errors.New("Error: No command provided")
 
 func main() {

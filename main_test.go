@@ -58,5 +58,5 @@ func TestReader(t *testing.T) {
 	if result != expected {
 		t.Fatalf("Expected %q, got %q", expected, result)
 	}
-
 }
+
